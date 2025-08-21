@@ -1,12 +1,14 @@
-# Moonbound: The Ashen Crown Chronicles
+# Moonbound: The Five Champions
 
 A deep, atmospheric dark fantasy visual novel created for [SuNoFes 2025](https://itch.io/jam/sunofes25) - a game jam focused on visual novels and story-based games.
+
+> Note: This visual novel is a companion piece to the original Moonbound incremental game, not a direct continuation.
 
 **Made by Shade**
 
 ## About the Game
 
-**Moonbound: The Ashen Crown Chronicles** is an extensive dark fantasy visual novel that explores themes of eternal recurrence, moral complexity, and the weight of choices across infinite timelines. Set in 13th century Eastern Europe, you play as the Chronicler - an immortal observer who must choose a champion to stand against the cursed Ashen Crown.
+**Moonbound: The Five Champions** is an extensive dark fantasy visual novel that explores themes of eternal recurrence, moral complexity, and the weight of choices across infinite timelines. Set in 13th century Eastern Europe, you play as the Chronicler - an immortal observer who must choose a champion to stand against the cursed Ashen Crown.
 
 ### Story Overview
 
@@ -205,7 +207,7 @@ This game is specifically designed for the [SuNoFes 2025](https://itch.io/jam/su
 
 **Created by Shade**
 
-**Moonbound: The Ashen Crown Chronicles**
+**Moonbound: The Five Champions**
 - A deep, atmospheric dark fantasy visual novel about eternal recurrence
 - Extensive character development and branching narratives
 - Rich world-building and emotional storytelling
