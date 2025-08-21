@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moonbound: The Five Champions - SuNoFes 2025</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Main Menu -->
+        <div id="main-menu" class="screen active">
+            <div class="menu-content">
+                <h1 class="game-title">Moonbound</h1>
+                <h2 class="game-subtitle">The Five Champions</h2>
+                <p class="game-description">An immortal observer witnesses infinite cycles of heroes rising to challenge the curse of the Ashen Crown. Experience deep character routes, complex choices, and the weight of eternal recurrence.</p>
+                <div class="menu-buttons">
+                    <button id="start-game" class="menu-btn primary">Begin Chronicle</button>
+                    <button id="load-game" class="menu-btn secondary">Load Chronicle</button>
+                    <button id="settings" class="menu-btn secondary">Settings</button>
+                    <button id="credits" class="menu-btn secondary">Credits</button>
+                </div>
+                <div class="jam-info">
+                    <p>Created for <a href="https://itch.io/jam/sunofes25" target="_blank">SuNoFes 2025</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div class="game-ui">
+                <!-- Background -->
+                <div id="background" class="background"></div>
+                
+                <!-- Character sprites -->
+                <div id="characters" class="characters">
+                    <div id="character-left" class="character left"></div>
+                    <div id="character-center" class="character center"></div>
+                    <div id="character-right" class="character right"></div>
+                </div>
+
+                <!-- Text box -->
+                <div id="text-box" class="text-box">
+                    <div id="speaker-name" class="speaker-name"></div>
+                    <div id="dialogue-text" class="dialogue-text"></div>
+                    <div class="text-indicator">Click to continue...</div>
+                </div>
+
+                <!-- Choice buttons -->
+                <div id="choices" class="choices"></div>
+
+                <!-- UI buttons -->
+                <div class="ui-buttons">
+                    <button id="save-btn" class="ui-btn" title="Save">💾</button>
+                    <button id="load-btn" class="ui-btn" title="Load">📂</button>
+                    <button id="auto-btn" class="ui-btn" title="Auto">▶️</button>
+                    <button id="skip-btn" class="ui-btn" title="Skip">⏭️</button>
+                    <button id="menu-btn" class="ui-btn" title="Menu">☰</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settings-screen" class="screen">
+            <div class="settings-content">
+                <h2>Settings</h2>
+                <div class="setting-group">
+                    <label for="text-speed">Text Speed:</label>
+                    <input type="range" id="text-speed" min="1" max="10" value="5">
+                </div>
+                <div class="setting-group">
+                    <label for="bgm-volume">BGM Volume:</label>
+                    <input type="range" id="bgm-volume" min="0" max="100" value="50">
+                </div>
+                <div class="setting-group">
+                    <label for="sfx-volume">SFX Volume:</label>
+                    <input type="range" id="sfx-volume" min="0" max="100" value="50">
+                </div>
+                <button id="back-to-menu" class="menu-btn primary">Back to Menu</button>
+            </div>
+        </div>
+
+        <!-- Credits Screen -->
+        <div id="credits-screen" class="screen">
+            <div class="credits-content">
+                <h2>Credits</h2>
+                <div class="credits-section">
+                    <h3>Created by</h3>
+                    <p class="creator-name">Shade</p>
+                    <p>Moonbound: The Five Champions</p>
+                    <p>A dark fantasy visual novel about eternal recurrence</p>
+                </div>
+                <div class="credits-section">
+                    <h3>Story & Development</h3>
+                    <p>Created for SuNoFes 2025</p>
+                    <p>Deep character routes and branching narratives</p>
+                    <p>Dark fantasy storytelling tradition</p>
+                </div>
+                <div class="credits-section">
+                    <h3>Special Thanks</h3>
+                    <p>SuNoFes community</p>
+                    <p>Visual novel enthusiasts worldwide</p>
+                    <p>Dark fantasy storytelling tradition</p>
+                </div>
+                <div class="made-by">
+                    <p>Made by Shade</p>
+                </div>
+                <button id="credits-back" class="menu-btn primary">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
