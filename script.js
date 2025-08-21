@@ -1,4 +1,4 @@
-// Moonbound: The Ashen Crown Chronicles - Visual Novel
+// Moonbound: The Five Champions - Visual Novel
 // Made by Shade
 class MoonboundVisualNovel {
     constructor() {
@@ -12,6 +12,7 @@ class MoonboundVisualNovel {
         this.championRoute = null;
         this.bondLevel = 0;
         this.storyProgress = {};
+        this.dialogueHistory = []; // Track dialogue history
         this.saveData = this.loadSaveData();
         
         this.initializeEventListeners();
@@ -390,11 +391,13 @@ class MoonboundVisualNovel {
         document.getElementById('load-btn').addEventListener('click', () => this.loadGame());
         document.getElementById('auto-btn').addEventListener('click', () => this.toggleAuto());
         document.getElementById('skip-btn').addEventListener('click', () => this.skipScene());
+        document.getElementById('history-btn').addEventListener('click', () => this.toggleDialogueHistory());
         document.getElementById('menu-btn').addEventListener('click', () => this.showMainMenu());
 
         // Settings and credits back buttons
         document.getElementById('back-to-menu').addEventListener('click', () => this.showMainMenu());
         document.getElementById('credits-back').addEventListener('click', () => this.showMainMenu());
+        document.getElementById('close-history').addEventListener('click', () => this.toggleDialogueHistory());
 
         // Settings controls
         document.getElementById('text-speed').addEventListener('input', (e) => {
@@ -422,6 +425,7 @@ class MoonboundVisualNovel {
         this.showScreen('game-screen');
         this.currentScene = 'prologue';
         this.currentLine = 0;
+        this.dialogueHistory = []; // Reset dialogue history
         this.displayScene();
     }
 
@@ -434,18 +438,16 @@ class MoonboundVisualNovel {
         this.championRoute = null;
         this.bondLevel = 0;
         this.storyProgress = {};
+        this.dialogueHistory = [];
     }
 
     // Scene display
     displayScene() {
         const sceneData = this.story[this.currentScene];
-        if (!sceneData) return;
+        if (!sceneData || sceneData.length === 0) return;
 
-        const scene = sceneData[this.currentLine];
-        if (!scene) {
-            this.nextScene();
-            return;
-        }
+        // Always use the first (and usually only) scene object; advance within its dialogue
+        const scene = sceneData[0];
 
         // Set background
         document.getElementById('background').style.background = scene.background;
@@ -493,6 +495,9 @@ class MoonboundVisualNovel {
             speakerElement.classList.remove('visible');
         }
 
+        // Add to dialogue history
+        this.addToDialogueHistory(dialogue);
+
         // Type out text
         this.typeText(textElement, dialogue.text);
 
@@ -502,6 +507,52 @@ class MoonboundVisualNovel {
         } else {
             this.hideChoices();
         }
+    }
+
+    // Add dialogue to history
+    addToDialogueHistory(dialogue) {
+        this.dialogueHistory.push({
+            speaker: dialogue.speaker,
+            text: dialogue.text,
+            timestamp: new Date().toLocaleTimeString()
+        });
+        
+        // Keep only last 50 entries to prevent memory issues
+        if (this.dialogueHistory.length > 50) {
+            this.dialogueHistory = this.dialogueHistory.slice(-50);
+        }
+    }
+
+    // Show dialogue history
+    showDialogueHistory() {
+        const historyContainer = document.getElementById('dialogue-history');
+        if (!historyContainer) return;
+
+        historyContainer.innerHTML = '';
+        
+        this.dialogueHistory.forEach(entry => {
+            const entryDiv = document.createElement('div');
+            entryDiv.className = 'history-entry';
+            
+            const speakerSpan = document.createElement('span');
+            speakerSpan.className = 'history-speaker';
+            speakerSpan.textContent = entry.speaker || 'Narrator';
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = 'history-text';
+            textSpan.textContent = entry.text;
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'history-time';
+            timeSpan.textContent = entry.timestamp;
+            
+            entryDiv.appendChild(speakerSpan);
+            entryDiv.appendChild(textSpan);
+            entryDiv.appendChild(timeSpan);
+            historyContainer.appendChild(entryDiv);
+        });
+        
+        historyContainer.scrollTop = historyContainer.scrollHeight;
     }
 
     typeText(element, text) {
@@ -561,17 +612,30 @@ class MoonboundVisualNovel {
         if (this.isTyping) {
             // Skip typing animation
             const sceneData = this.story[this.currentScene];
-            const scene = sceneData[this.currentLine];
-            const dialogue = scene.dialogue[this.currentLine];
-            document.getElementById('dialogue-text').textContent = dialogue.text;
+            const scene = sceneData && sceneData[0];
+            if (scene) {
+                const dialogue = scene.dialogue[this.currentLine];
+                document.getElementById('dialogue-text').textContent = dialogue.text;
+            }
             this.isTyping = false;
             return;
         }
 
         const sceneData = this.story[this.currentScene];
+        const scene = sceneData && sceneData[0];
+        if (!scene) {
+            this.nextScene();
+            return;
+        }
+
+        // If choices are present on the last line, require a choice instead of advancing
+        if (scene.choices && this.currentLine >= scene.dialogue.length - 1) {
+            return;
+        }
+
         this.currentLine++;
 
-        if (this.currentLine >= sceneData.length) {
+        if (this.currentLine >= scene.dialogue.length) {
             this.nextScene();
         } else {
             this.displayScene();
@@ -590,14 +654,19 @@ class MoonboundVisualNovel {
             // Continue with champion-specific story based on route
             this.currentScene = this.selectedChampion + '_' + this.championRoute;
             this.currentLine = 0;
-        } else if (this.currentScene.includes('_route')) {
-            // Continue with route-specific content
-            this.currentScene = this.currentScene + '_continued';
-            this.currentLine = 0;
+        } else if (this.currentScene === 'ending_common') {
+            // End the story - don't progress further
+            return;
         } else {
-            // End the story
-            this.currentScene = 'ending_common';
-            this.currentLine = 0;
+            // If there is a continued scene, go there; otherwise end
+            const continuedKey = this.currentScene + '_continued';
+            if (this.story[continuedKey]) {
+                this.currentScene = continuedKey;
+                this.currentLine = 0;
+            } else {
+                this.currentScene = 'ending_common';
+                this.currentLine = 0;
+            }
         }
 
         this.displayScene();
@@ -614,15 +683,29 @@ class MoonboundVisualNovel {
         }
     }
 
+    // Toggle dialogue history
+    toggleDialogueHistory() {
+        const historyPanel = document.getElementById('dialogue-history-panel');
+        if (historyPanel.classList.contains('active')) {
+            historyPanel.classList.remove('active');
+        } else {
+            historyPanel.classList.add('active');
+            this.showDialogueHistory();
+        }
+    }
+
     // Skip functionality
     skipScene() {
         const sceneData = this.story[this.currentScene];
-        if (sceneData && sceneData[0] && sceneData[0].choices) {
+        const scene = sceneData && sceneData[0];
+        if (!scene) return;
+
+        if (scene.choices) {
             // Skip to next scene if there are choices
             this.nextScene();
         } else {
-            // Skip to end of current scene
-            this.currentLine = sceneData.length - 1;
+            // Skip to end of current scene's dialogue
+            this.currentLine = scene.dialogue.length - 1;
             this.displayScene();
         }
     }
@@ -636,6 +719,7 @@ class MoonboundVisualNovel {
             championRoute: this.championRoute,
             bondLevel: this.bondLevel,
             storyProgress: this.storyProgress,
+            dialogueHistory: this.dialogueHistory,
             timestamp: Date.now()
         };
         localStorage.setItem('moonbound_save', JSON.stringify(saveData));
@@ -659,6 +743,7 @@ class MoonboundVisualNovel {
             this.championRoute = data.championRoute;
             this.bondLevel = data.bondLevel;
             this.storyProgress = data.storyProgress || {};
+            this.dialogueHistory = data.dialogueHistory || [];
             this.showScreen('game-screen');
             this.displayScene();
         } else {
