@@ -13,6 +13,8 @@ class MoonboundVisualNovel {
         this.bondLevel = 0;
         this.storyProgress = {};
         this.dialogueHistory = []; // Track dialogue history
+        this.typingInterval = null; // handle for typing animation
+        this.autoTimeoutId = null; // handle for auto-advance timeout
         this.saveData = this.loadSaveData();
         
         this.initializeEventListeners();
@@ -556,25 +558,39 @@ class MoonboundVisualNovel {
     }
 
     typeText(element, text) {
+        // Ensure we don't have multiple intervals running
+        this.clearTyping();
         this.isTyping = true;
         element.textContent = '';
         
-        const speed = 100 - (this.textSpeed * 10);
+        const speed = Math.max(10, 100 - (this.textSpeed * 10));
         let index = 0;
 
-        const typeInterval = setInterval(() => {
+        this.typingInterval = setInterval(() => {
             if (index < text.length) {
                 element.textContent += text[index];
                 index++;
             } else {
-                clearInterval(typeInterval);
+                this.clearTyping();
                 this.isTyping = false;
                 
                 if (this.autoMode) {
-                    setTimeout(() => this.nextLine(), 2000);
+                    this.autoTimeoutId = setTimeout(() => this.nextLine(), 2000);
                 }
             }
         }, speed);
+    }
+
+    // Clear typing interval and pending auto-advance
+    clearTyping() {
+        if (this.typingInterval) {
+            clearInterval(this.typingInterval);
+            this.typingInterval = null;
+        }
+        if (this.autoTimeoutId) {
+            clearTimeout(this.autoTimeoutId);
+            this.autoTimeoutId = null;
+        }
     }
 
     displayChoices(choices) {
